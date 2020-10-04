@@ -1,0 +1,9 @@
+{
+  "App": {
+    "token": "TinkoffBrokerToken"
+  },
+  "Telegram": {
+    "token": "BotApiToken",
+    "AllowedUsers": ["TelegramUserName"]
+  }
+}

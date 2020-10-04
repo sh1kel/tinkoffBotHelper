@@ -1,23 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
 	"log"
 	"math/rand"
-	"os"
+	"sync"
 	"time"
 )
-
-type Config struct {
-	App ApplicationConfig
-}
-
-type ApplicationConfig struct {
-	Token string
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 // Генерируем уникальный ID для запроса
 func requestID() string {
@@ -45,15 +34,21 @@ func errorHandle(err error) error {
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano()) // инициируем Seed рандома для функции requestID
-	configFile, _ := os.Open("config.json")
-	decoder := json.NewDecoder(configFile)
-	config := new(Config)
-	err := decoder.Decode(&config)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	rest(&config.App.Token)
+	config := GetConfig()
+	commandChan := make(chan string)
+	responseChan := make(chan string)
+	var wg sync.WaitGroup
 
-	//stream()
+	wg.Add(3)
+	log.Println("Starting trade loop...")
+	go TradeLoop(config.App, commandChan, responseChan, &wg)
+	log.Println("Starting telegram loop...")
+
+	go telegramLoop(config.Telegram, commandChan, responseChan, &wg)
+
+	rand.Seed(time.Now().UnixNano()) // инициируем Seed рандома для функции requestID
+	//rest(&config.App.Token)
+	log.Println("Waiting...")
+
+	wg.Wait()
 }
