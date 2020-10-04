@@ -49,6 +49,7 @@ func ProcessTelegramMessage(bot *tgbotapi.BotAPI, commandChan chan string, respo
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, responseText)
 		msg.ReplyToMessageID = update.Message.MessageID
 		msg.ParseMode = "Markdown"
+		//msg.ReplyMarkup = numericKeyboard
 
 		_, err := bot.Send(msg)
 		if err != nil {
@@ -56,3 +57,9 @@ func ProcessTelegramMessage(bot *tgbotapi.BotAPI, commandChan chan string, respo
 		}
 	}
 }
+
+var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Показать позиции", "/getactives"),
+	),
+)

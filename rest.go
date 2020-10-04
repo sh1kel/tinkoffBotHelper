@@ -21,7 +21,7 @@ func TradeLoop(config ApplicationConfig, command chan string, response chan stri
 
 	for c := range command {
 		log.Printf("Got command: %s\n", c)
-		if c == "getPositions" {
+		if c == "/getactives" {
 			positions, err := GetPositionsPortfolio(*client, *iisAccountID)
 			if err != nil {
 				log.Println("GetPositionsPortfolio error: ", err)
@@ -35,11 +35,23 @@ func TradeLoop(config ApplicationConfig, command chan string, response chan stri
 func FormatPositions(positions []sdk.PositionBalance) string {
 	var response string
 	for _, pos := range positions {
-		response = response + "**" + pos.Name + "** (" + pos.Ticker + ")\n" +
-			fmt.Sprintf("%.2f", pos.AveragePositionPrice.Value) + " " +
-			string(pos.AveragePositionPrice.Currency) + "\n" +
-			fmt.Sprintf("%.2f", pos.Balance) + " " + string(pos.InstrumentType) + "\n" +
-			"**Стоимость:** " + fmt.Sprintf("%.2f", pos.Balance*pos.AveragePositionPrice.Value) + "\n\n"
+		/*
+			response = response + "**" + pos.Name + "** (" + pos.Ticker + ")\n" +
+				fmt.Sprintf("%.2f", pos.AveragePositionPrice.Value) + " " +
+				string(pos.AveragePositionPrice.Currency) + "\n" +
+				fmt.Sprintf("%.2f", pos.Balance) + " " + string(pos.InstrumentType) + "\n" +
+				"**Стоимость:** " + fmt.Sprintf("%.2f", pos.Balance*pos.AveragePositionPrice.Value) + "\n\n"
+
+		*/
+		response = response + fmt.Sprintf("*%s* (%s)\n%.2f %s\n%.2f %s\n*%s* %.2f\n\n",
+			pos.Name,
+			pos.Ticker,
+			pos.AveragePositionPrice.Value,
+			string(pos.AveragePositionPrice.Currency),
+			pos.Balance,
+			string(pos.InstrumentType),
+			"Стоимость:",
+			pos.Balance*pos.AveragePositionPrice.Value)
 	}
 	return response
 }
