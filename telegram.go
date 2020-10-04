@@ -6,8 +6,8 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func telegramInit() {
-	bot, err := tgbotapi.NewBotAPI("MyAwesomeBotToken")
+func telegramInit(telegramConfig TelegramConfig) {
+	bot, err := tgbotapi.NewBotAPI(telegramConfig.Token)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -23,12 +23,17 @@ func telegramInit() {
 		if update.Message == nil { // ignore any non-Message Updates
 			continue
 		}
+		for _, user := range telegramConfig.AllowedUsers {
+			if user == update.Message.From.UserName {
+				log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+				msg.ReplyToMessageID = update.Message.MessageID
 
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
-
-		bot.Send(msg)
+				_, err := bot.Send(msg)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+		}
 	}
 }

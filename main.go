@@ -1,23 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
-	"log"
 	"math/rand"
-	"os"
 	"time"
 )
-
-type Config struct {
-	App ApplicationConfig
-}
-
-type ApplicationConfig struct {
-	Token string
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 // Генерируем уникальный ID для запроса
 func requestID() string {
@@ -45,15 +32,9 @@ func errorHandle(err error) error {
 }
 
 func main() {
+	config := GetConfig()
+	telegramInit(config.Telegram)
 	rand.Seed(time.Now().UnixNano()) // инициируем Seed рандома для функции requestID
-	configFile, _ := os.Open("config.json")
-	decoder := json.NewDecoder(configFile)
-	config := new(Config)
-	err := decoder.Decode(&config)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	rest(&config.App.Token)
+	//rest(&config.App.Token)
 
-	//stream()
 }
