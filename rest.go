@@ -35,11 +35,11 @@ func TradeLoop(config ApplicationConfig, command chan string, response chan stri
 func FormatPositions(positions []sdk.PositionBalance) string {
 	var response string
 	for _, pos := range positions {
-		response = response + "<b>" + pos.Name + "<b>\n" +
+		response = response + "**" + pos.Name + "** (" + pos.Ticker + ")\n" +
 			fmt.Sprintf("%.2f", pos.AveragePositionPrice.Value) + " " +
 			string(pos.AveragePositionPrice.Currency) + "\n" +
 			fmt.Sprintf("%.2f", pos.Balance) + " " + string(pos.InstrumentType) + "\n" +
-			"Стоимость: " + fmt.Sprintf("%.2f", pos.Balance*pos.AveragePositionPrice.Value) + "\n\n"
+			"**Стоимость:** " + fmt.Sprintf("%.2f", pos.Balance*pos.AveragePositionPrice.Value) + "\n\n"
 	}
 	return response
 }

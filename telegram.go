@@ -48,6 +48,7 @@ func ProcessTelegramMessage(bot *tgbotapi.BotAPI, commandChan chan string, respo
 		responseText := <-responseChan
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, responseText)
 		msg.ReplyToMessageID = update.Message.MessageID
+		msg.ParseMode = "Markdown"
 
 		_, err := bot.Send(msg)
 		if err != nil {
